@@ -1,4 +1,4 @@
-# ✅ psychiatric_dropout demo App（修正版：支援六類診斷 + SHAP + 無 validate_features 錯誤）
+# ✅ psychiatric_dropout demo App（修正版：穩定處理單筆輸入 + SHAP）
 import streamlit as st
 import pandas as pd
 import joblib
@@ -45,15 +45,15 @@ user_input = pd.DataFrame({
     f'self_harm_during_admission_{selfharm_adm}': [1],
 })
 
-# 與 sample 欄位對齊（補0）
-X_final = sample.copy()
+# 對齊 sample 欄位（只保留一筆 row）
+X_final = pd.DataFrame(columns=sample.columns)
+X_final.loc[0] = 0  # 預設填 0
 for col in user_input.columns:
-    X_final[col] = user_input[col]
-X_final = X_final.fillna(0)  # 確保沒有 NaN
-X_np = X_final.to_numpy()  # 轉成 numpy array，避免欄位驗證錯誤
+    if col in X_final.columns:
+        X_final.at[0, col] = user_input[col][0]
 
 # 預測
-prob = model.predict_proba(X_np)[0][1]
+prob = model.predict_proba(X_final)[0][1]
 st.metric("Predicted Dropout Risk (within 3 months)", f"{prob*100:.1f}%")
 
 # 分級提示
