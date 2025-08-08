@@ -57,7 +57,7 @@ input_df = user_input()
 X_final = input_df.reindex(columns=feature_names, fill_value=0)
 
 # 預測與風險顯示
-prob = model.predict_proba(X_final)[0][1]
+prob = model.predict_proba(X_final, validate_features=False)[0][1]
 score = int(round(prob * 100))
 st.subheader("Predicted Dropout Risk Score")
 st.metric(label="Dropout risk (3 months)", value=f"{score}/100")
