@@ -52,7 +52,7 @@ for col in user_input.columns:
 X_final = X_final[sample.columns]  # 順序一致
 
 # 預測
-prob = model.predict_proba(X_final, validate_features=False)[0][1]
+prob = model.predict_proba(X_final.values.reshape(1, -1))[0][1]
 st.metric("Predicted Dropout Risk (within 3 months)", f"{prob*100:.1f}%")
 
 # 分級提示
