@@ -65,6 +65,5 @@ st.metric(label="Dropout risk (3 months)", value=f"{score}/100")
 # SHAP 圖
 st.subheader("SHAP Explanation")
 shap_values = explainer(X_final)
-st.set_option('deprecation.showPyplotGlobalUse', False)
 shap.plots.waterfall(shap_values[0], max_display=8)
 st.pyplot(bbox_inches='tight')
