@@ -1,7 +1,6 @@
 xgboost
-shap
-pandas
 scikit-learn
+pandas
+shap
 matplotlib
 streamlit
-joblib
