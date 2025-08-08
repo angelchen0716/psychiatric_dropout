@@ -1,0 +1,2 @@
+age,gender_Female,gender_Male,diagnosis_Bipolar,diagnosis_Depression,diagnosis_Schizophrenia,length_of_stay,num_previous_admissions,has_social_worker_No,has_social_worker_Yes,medication_compliance_score,has_recent_self_harm_Yes,has_recent_self_harm_No,self_harm_during_admission_Yes,self_harm_during_admission_No,family_support_score,post_discharge_followups
+32,1,0,0,1,0,12,1,0,1,4.3,1,0,0,1,2.7,1
