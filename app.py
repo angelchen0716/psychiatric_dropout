@@ -1,4 +1,4 @@
-# ✅ psychiatric_dropout demo App (最終版)
+# ✅ psychiatric_dropout demo App（支援六類診斷 + SHAP）
 import streamlit as st
 import pandas as pd
 import joblib
@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 st.set_page_config(page_title="Psychiatric Dropout Risk", layout="wide")
 st.title("🧠 Psychiatric Dropout Risk Predictor")
 
-# 載入模型與欄位
+# 載入模型與欄位樣板
 model = joblib.load("dropout_model.pkl")
 sample = pd.read_csv("sample_input.csv")
 
@@ -17,7 +17,10 @@ with st.sidebar:
     st.header("Patient Info")
     age = st.slider("Age", 18, 75, 35)
     gender = st.selectbox("Gender", ["Male", "Female"])
-    diagnosis = st.selectbox("Diagnosis", ["Schizophrenia", "Bipolar", "Depression"])
+    diagnosis = st.selectbox("Diagnosis", [
+        "Schizophrenia", "Bipolar", "Depression",
+        "Personality Disorder", "Substance Use Disorder", "Dementia"
+    ])
     length_of_stay = st.slider("Length of Stay (days)", 1, 90, 10)
     num_adm = st.slider("# Previous Admissions", 0, 15, 1)
     social_worker = st.radio("Has Social Worker", ["Yes", "No"])
@@ -27,7 +30,7 @@ with st.sidebar:
     support = st.slider("Family Support Score", 0.0, 10.0, 5.0)
     followups = st.slider("Post-discharge Followups", 0, 10, 2)
 
-# 建立 dataframe
+# 建立單筆使用者資料
 user_input = pd.DataFrame({
     'age': [age],
     'length_of_stay': [length_of_stay],
@@ -42,17 +45,17 @@ user_input = pd.DataFrame({
     f'self_harm_during_admission_{selfharm_adm}': [1],
 })
 
-# 補足 0 欄位
+# 與 sample 欄位對齊（補0）
 X_final = sample.copy()
 for col in user_input.columns:
     X_final[col] = user_input[col]
-X_final = X_final[sample.columns]  # 確保順序一致
+X_final = X_final[sample.columns]  # 順序一致
 
-# 預測與分數顯示
+# 預測
 prob = model.predict_proba(X_final, validate_features=False)[0][1]
 st.metric("Predicted Dropout Risk (within 3 months)", f"{prob*100:.1f}%")
 
-# 風險分級
+# 分級提示
 if prob > 0.7:
     st.error("🔴 High Risk")
 elif prob > 0.4:
@@ -67,5 +70,4 @@ shap_values = explainer(X_final)
 shap.summary_plot(shap_values, X_final, show=False)
 st.pyplot()
 
-# Footer
-st.caption("Model trained on synthetic data. For demonstration purposes only.")
+st.caption("Model trained on simulated data reflecting clinical dropout risk factors. Not for clinical use.")
