@@ -1,4 +1,4 @@
-# ✅ psychiatric_dropout demo App（修正版：穩定處理單筆輸入 + SHAP）
+# ✅ psychiatric_dropout demo App（最終修正版：繞過欄位驗證錯誤）
 import streamlit as st
 import pandas as pd
 import joblib
@@ -45,15 +45,16 @@ user_input = pd.DataFrame({
     f'self_harm_during_admission_{selfharm_adm}': [1],
 })
 
-# 對齊 sample 欄位（只保留一筆 row）
-X_final = pd.DataFrame(columns=sample.columns)
-X_final.loc[0] = 0  # 預設填 0
+# 轉成 numpy array 並填入順序欄位值
+X_final = sample.iloc[[0]].copy()
+X_final.iloc[0] = 0  # 全部歸零
 for col in user_input.columns:
     if col in X_final.columns:
-        X_final.at[0, col] = user_input[col][0]
+        X_final.iloc[0][col] = user_input[col][0]
 
-# 預測
-prob = model.predict_proba(X_final)[0][1]
+# 預測（轉為 numpy）
+X_input = X_final.to_numpy()
+prob = model.predict_proba(X_input)[0][1]
 st.metric("Predicted Dropout Risk (within 3 months)", f"{prob*100:.1f}%")
 
 # 分級提示
