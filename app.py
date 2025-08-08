@@ -1,4 +1,4 @@
-# ✅ psychiatric_dropout demo App（支援六類診斷 + SHAP）
+# ✅ psychiatric_dropout demo App（修正版：支援六類診斷 + SHAP + 無 validate_features 錯誤）
 import streamlit as st
 import pandas as pd
 import joblib
@@ -49,10 +49,11 @@ user_input = pd.DataFrame({
 X_final = sample.copy()
 for col in user_input.columns:
     X_final[col] = user_input[col]
-X_final = X_final[sample.columns]  # 順序一致
+X_final = X_final.fillna(0)  # 確保沒有 NaN
+X_np = X_final.to_numpy()  # 轉成 numpy array，避免欄位驗證錯誤
 
 # 預測
-prob = model.predict_proba(X_final.values.reshape(1, -1))[0][1]
+prob = model.predict_proba(X_np)[0][1]
 st.metric("Predicted Dropout Risk (within 3 months)", f"{prob*100:.1f}%")
 
 # 分級提示
