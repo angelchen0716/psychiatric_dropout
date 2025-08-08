@@ -1,4 +1,4 @@
-# ✅ psychiatric_dropout demo App（最終修正版：繞過欄位驗證錯誤）
+# ✅ psychiatric_dropout demo App（最終修正版：使用 Booster 避免特徵驗證錯誤）
 import streamlit as st
 import pandas as pd
 import joblib
@@ -52,9 +52,9 @@ for col in user_input.columns:
     if col in X_final.columns:
         X_final.iloc[0][col] = user_input[col][0]
 
-# 預測（轉為 numpy）
+# 預測（使用 Booster 避免欄位驗證錯誤）
 X_input = X_final.to_numpy()
-prob = model.predict_proba(X_input)[0][1]
+prob = model.get_booster().predict(X_input)[0]
 st.metric("Predicted Dropout Risk (within 3 months)", f"{prob*100:.1f}%")
 
 # 分級提示
